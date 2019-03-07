@@ -25,32 +25,38 @@ end
 
 
 loop do
-  puts Time.now.strftime('%d-%m-%Y %H:%M:%S')
-  response = private_client.user_margin
-  puts "Available requests limit: #{response.headers['x-ratelimit-remaining']}/#{response.headers['x-ratelimit-limit']}"
-  user_margin = response.body
-  free_balance = to_xbt(user_margin.fetch(:availableMargin))
-  total_amount = to_xbt(user_margin.fetch(:walletBalance))
-  if (free_balance == total_amount)
-    puts "POSITION CLOSE DETECTED"
-    loop do
-      last_price = public_client.instrument({ symbol: 'XBTUSD' }).body.first[:lastPrice]
-      order_quantity = (free_balance * last_price).round(0) - 10
-      response = private_client.create_order('XBTUSD', order_quantity, side: 'Sell', ordType: 'Market')
-      next if response.status != 200
-      break
+  begin
+    puts Time.now.strftime('%d-%m-%Y %H:%M:%S')
+    response = private_client.user_margin
+    puts "Available requests limit: #{response.headers['x-ratelimit-remaining']}/#{response.headers['x-ratelimit-limit']}"
+    user_margin = response.body
+    free_balance = to_xbt(user_margin.fetch(:availableMargin))
+    total_amount = to_xbt(user_margin.fetch(:walletBalance))
+    if (free_balance == total_amount)
+      puts "POSITION CLOSE DETECTED"
+      loop do
+        last_price = public_client.instrument({ symbol: 'XBTUSD' }).body.first[:lastPrice]
+        order_quantity = (free_balance * last_price).round(0) - 10
+        response = private_client.create_order('XBTUSD', order_quantity, side: 'Sell', ordType: 'Market')
+        next if response.status != 200
+        break
+      end
+      loop do
+        response = private_client.position_isolate('XBTUSD', false)
+        next if response.status != 200
+        break
+      end
+      puts "ENTERED SHORT x0 WITH WHOLE ACCOUNT"
     end
-    loop do
-      response = private_client.position_isolate('XBTUSD', false)
-      next if response.status != 200
-      break
-    end
-    puts "ENTERED SHORT x0 WITH WHOLE ACCOUNT"
-  end
 
-  puts '------------'
-  puts "       Free balance:\t#{formatted_balance(free_balance)}"
-  puts "On exchange balance:\t#{formatted_balance(total_amount)}"
-  puts '*******************************'
-  sleep 10
+    puts '------------'
+    puts "       Free balance:\t#{formatted_balance(free_balance)}"
+    puts "On exchange balance:\t#{formatted_balance(total_amount)}"
+    puts '*******************************'
+    sleep 10
+  rescue Faraday::ConnectionFailed
+    puts "Couldn't connect to Bitmex."
+    puts '*******************************'
+    sleep 10
+  end
 end
