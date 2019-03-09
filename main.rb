@@ -65,7 +65,7 @@ loop do
     puts "\tOn exchange balance:\t#{formatted_balance(total_amount)}"
     countdown
   rescue Faraday::ConnectionFailed
-    puts "Could not connect to Bitmex"
+    puts "\tCould not connect to Bitmex"
     countdown
   end
 end
