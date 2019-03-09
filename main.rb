@@ -23,6 +23,12 @@ def formatted_balance(amount)
   amount.to_s.ljust(11).concat('XBT')
 end
 
+def countdown
+  puts "\t--------------------"
+  print "\t"
+  10.times { |i| print 10 - i; print ' '; sleep 1  }
+end
+
 script_start_timestamp = Time.now.strftime('%d-%m-%Y %H:%M:%S')
 detected_closes = 0
 
@@ -55,15 +61,11 @@ loop do
     end
     puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
     puts "\t Remaining requests:\t#{response.headers['x-ratelimit-remaining']}/#{response.headers['x-ratelimit-limit']}"
-
     puts "\t       Free balance:\t#{formatted_balance(free_balance)}"
     puts "\tOn exchange balance:\t#{formatted_balance(total_amount)}"
-    puts "\t--------------------"
-    print "\t"
-    10.times { |i| print 10 - i; print ' '; sleep 1  }
+    countdown
   rescue Faraday::ConnectionFailed
     puts "Could not connect to Bitmex"
-    puts "\t--------------------"
-    10.times { |i| print 10 - i; print ' '; sleep 1  }
+    countdown
   end
 end
