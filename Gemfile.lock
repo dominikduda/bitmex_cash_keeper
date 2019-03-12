@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/dominikduda/bitmex
-  revision: bc54bf80937599cc2431ce55d38da8da527f5ecd
+  revision: 75e8e382bc942ed769aedffbf745d3fc6fa67272
   branch: master
   specs:
     bitmex (0.2.0)
