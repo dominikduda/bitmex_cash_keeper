@@ -3,7 +3,7 @@ A bot automatically shorting x0 (cross margin/isolated position) with whole acco
 The shorted instrument is XBT month future, because it has no funding (to avoid funding)
 Shorting with cross margin freezes your money because such position is literally 'synthetic USD'.
 
-Google for "Bitmex synthetic usd" for more info.
+Google for "Bitmex synthetic USD" for more info.
 
 Tested on ruby 2.6.1
 
