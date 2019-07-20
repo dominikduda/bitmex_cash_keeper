@@ -50,7 +50,7 @@ def safe_response(&request)
   end
 end
 
-script_start_timestamp = Time.now.strftime('%d-%m-%Y %H:%M:%S')
+script_start_timestamp = Time.now.strftime('%d-%m-%Y')
 detected_closes = 0
 latest_expiring_xbt_future = nil
 
@@ -84,11 +84,12 @@ loop do
   if (free_balance == total_amount)
     puts "\tPOSITION CLOSE DETECTED"
     detected_closes += 1
-    last_price = safe_response { public_client.instrument({ symbol: 'XBTUSD' }) }.body.first[:lastPrice]
+    last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
     order_quantity = (free_balance * last_price).round(0) - 10
-    safe_response { private_client.create_order('XBTUSD', order_quantity, side: 'Sell', ordType: 'Market') }
-    safe_response { private_client.position_isolate('XBTUSD', false) }
+    safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
+    safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
     puts "\tENTERED SHORT x0 WITH WHOLE ACCOUNT"
+    puts
   end
   puts "\t  Script started at:\t#{script_start_timestamp}"
   puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
