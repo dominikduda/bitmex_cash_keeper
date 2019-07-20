@@ -94,8 +94,8 @@ loop do
   puts "\t  Script started at:\t#{script_start_timestamp}"
   puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
   puts "\t    Detected closes:\t#{detected_closes}"
-  puts
   puts "\t Remaining requests:\t#{user_margin_info.headers['x-ratelimit-remaining']}/#{user_margin_info.headers['x-ratelimit-limit']}"
+  puts
   puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
   puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
   puts
