@@ -50,7 +50,7 @@ def safe_response(&request)
   end
 end
 
-script_start_timestamp = Time.now.strftime('%d-%m-%Y')
+script_start_timestamp = Time.now.strftime('%d-%m-%Y %H:%M:%S')
 detected_closes = 0
 latest_expiring_xbt_future = nil
 
@@ -97,7 +97,7 @@ loop do
   puts
   puts "\t Remaining requests:\t#{user_margin_info.headers['x-ratelimit-remaining']}/#{user_margin_info.headers['x-ratelimit-limit']}"
   puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
-  puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y %H:%M:%S')}"
+  puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
   puts
   puts "\t       Free balance:\t#{formatted_balance(free_balance)}"
   puts "\tOn exchange balance:\t#{formatted_balance(total_amount)}"
