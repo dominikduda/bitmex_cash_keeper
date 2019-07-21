@@ -27,11 +27,10 @@ end
 
 def countdown
   puts
-  puts "\t                   ↺"
   print "\t"
   20.times do |i|
     if (i + 1) % 20 == 0
-      print '▲'
+      print '↓'
     else
       print '»'
     end
