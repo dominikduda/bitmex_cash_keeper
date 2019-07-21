@@ -6,12 +6,13 @@ Shorting with cross margin freezes your money because such position is literally
 
 Google for "Bitmex synthetic USD" for more info about this mechanic.
 
-
-Tested on ruby 2.6.1
-
 # Usage
 1. Run `bundle install`
 2. Copy `.env.example` to `.env` and fill your Bitmex api key and secret
 3. Run `ruby main.rb`
-You also may want to point to fixed commit (instead of latest master) for my Bitmex api gem: https://github.com/dominikduda/bitmex_cash_keeper/blob/master/Gemfile#L3
+You also may want to point to fixed commit (instead of latest master) for [my Bitmex api gem](https://github.com/dominikduda/bitmex_cash_keeper/blob/master/Gemfile#L3).
 
+Tested on ruby 2.6.1
+
+### Output screenshot:
+![output](https://raw.githubusercontent.com/dominikduda/bitmex_cash_keeper/master/bitmex_cash_keeper_output.png)
