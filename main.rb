@@ -26,9 +26,17 @@ def formatted_balance(amount)
 end
 
 def countdown
-  puts "\t--------------------"
+  puts
+  puts "\t                   ↺"
   print "\t"
-  10.times { |i| print 10 - i; print ' '; sleep 1  }
+  20.times do |i|
+    if (i + 1) % 20 == 0
+      print '▲'
+    else
+      print '»'
+    end
+    sleep 0.5
+  end
 end
 
 def safe_response(&request)
@@ -76,12 +84,12 @@ loop do
     end.last
     puts "\tSuccess!"
   end
-  puts "\t-------------------------------------------"
   user_margin_info = safe_response { private_client.user_margin }
   free_balance = to_xbt(user_margin_info.body.fetch(:availableMargin))
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
   ping_to_bitmex = `ping -c 1 bitmex.com | grep time= | awk '{ print $8 }' | awk -F "=" '{ print $2 }'`
-  begin 'Detecting and handling position close'
+  begin
+    puts "\tLooking for position close..."
     if (free_balance == total_amount)
       puts "\tPOSITION CLOSE DETECTED"
       detected_closes += 1
@@ -90,9 +98,11 @@ loop do
       safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
       safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
       puts "\tENTERED SHORT x0 WITH WHOLE ACCOUNT"
-      puts
+    else
+      puts "\tNot found."
     end
   end
+  puts "\t-------------------------------------------"
   puts "\t  Script started at:\t#{script_start_timestamp}"
   puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
   puts "\t    Detected closes:\t#{detected_closes}"
