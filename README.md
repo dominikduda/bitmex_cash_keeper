@@ -16,3 +16,4 @@ Tested on ruby 2.6.1
 
 ### Output screenshot:
 ![output](https://raw.githubusercontent.com/dominikduda/bitmex_cash_keeper/master/bitmex_cash_keeper_output.png)
+
