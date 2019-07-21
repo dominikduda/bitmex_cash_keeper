@@ -75,9 +75,9 @@ loop do
       Time.new(future[:expiry])
     end.last
     puts "\tSuccess!"
-    puts
     latest_expiring_xbt_future
   end
+  puts "\t-------------------------------------------"
   user_margin_info = safe_response { private_client.user_margin }
   free_balance = to_xbt(user_margin_info.body.fetch(:availableMargin))
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
