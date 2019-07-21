@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/dominikduda/config_files/master/dd_logo_blue_bg.png" width="300" height="300" />
+
 # bitmex_cash_keeper
 A bot automatically shorting x0 (cross margin/isolated position) with whole account when all positions are closed.
 The shorted instrument is XBT month future, because it has no funding (to avoid funding)
