@@ -12,7 +12,7 @@ Google for "Bitmex synthetic USD" for more info about this mechanic.
 1. Run `bundle install`
 2. Copy `.env.example` to `.env` and fill your Bitmex api key and secret
 3. Run `ruby main.rb`
-You also may want to point to fixed commit (instead of latest master) for [my Bitmex api gem](https://github.com/dominikduda/bitmex_cash_keeper/blob/master/Gemfile#L3).
+4. You also may want to point to fixed commit (instead of latest master) for [my Bitmex api gem](https://github.com/dominikduda/bitmex_cash_keeper/blob/master/Gemfile#L3).
 
 Tested on ruby 2.6.1
 
