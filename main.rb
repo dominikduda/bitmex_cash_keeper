@@ -75,12 +75,12 @@ loop do
       Time.new(future[:expiry])
     end.last
     puts "\tSuccess!"
-    latest_expiring_xbt_future
   end
   puts "\t-------------------------------------------"
   user_margin_info = safe_response { private_client.user_margin }
   free_balance = to_xbt(user_margin_info.body.fetch(:availableMargin))
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
+  ping_to_bitmex = `ping -c 1 bitmex.com | grep time= | awk '{ print $8 }' | awk -F "=" '{ print $2 }'`
   if (free_balance == total_amount)
     puts "\tPOSITION CLOSE DETECTED"
     detected_closes += 1
@@ -95,6 +95,7 @@ loop do
   puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
   puts "\t    Detected closes:\t#{detected_closes}"
   puts "\t Remaining requests:\t#{user_margin_info.headers['x-ratelimit-remaining']}/#{user_margin_info.headers['x-ratelimit-limit']}"
+  puts "\t     Ping to Bitmex:\t#{ping_to_bitmex.chomp} ms"
   puts
   puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
   puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
