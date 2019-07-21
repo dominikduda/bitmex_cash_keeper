@@ -7,10 +7,10 @@ require 'dotenv/load'
 require 'bitmex'
 
 Bitmex.configure do |config|
-  config.adapter = Faraday.default_adapter # default: Faraday.default_adapter
-  config.url = 'https://www.bitmex.com' # default: https://www.bitmex.com
-  config.user_agent = 'Bitmex Ruby Gem' # default: 'Bitmex Ruby Gem [Gem Version]'
-  # config.loud_logger = true # default false
+  config.adapter = Faraday.default_adapter
+  config.url = 'https://www.bitmex.com'
+  config.user_agent = 'Bitmex Ruby Gem'
+  # config.loud_logger = true
 end
 private_client = Bitmex.http_private_client(ENV['BITMEX_API_KEY'], ENV['BITMEX_API_SECRET'])
 public_client = Bitmex.http_public_client
@@ -33,7 +33,7 @@ end
 
 def safe_response(&request)
   response = nil
-  loop do
+  loop do 'Ensuring request is received with 200'
     begin
       response = request.call
     rescue BitmexError => error
@@ -56,7 +56,7 @@ latest_expiring_xbt_future = nil
 
 loop do
   system 'clear'
-  loop do
+  loop do 'Fetching latest expiring XBT future'
     break if latest_expiring_xbt_future
     puts "\tFinding latest expiring XBT future..."
     this_and_next_year_suffixes = [Time.now.year, Time.now.year + 1].map do |year|
@@ -81,15 +81,17 @@ loop do
   free_balance = to_xbt(user_margin_info.body.fetch(:availableMargin))
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
   ping_to_bitmex = `ping -c 1 bitmex.com | grep time= | awk '{ print $8 }' | awk -F "=" '{ print $2 }'`
-  if (free_balance == total_amount)
-    puts "\tPOSITION CLOSE DETECTED"
-    detected_closes += 1
-    last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
-    order_quantity = (free_balance * last_price).round(0) - 10
-    safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
-    safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
-    puts "\tENTERED SHORT x0 WITH WHOLE ACCOUNT"
-    puts
+  begin 'Detecting and handling position close'
+    if (free_balance == total_amount)
+      puts "\tPOSITION CLOSE DETECTED"
+      detected_closes += 1
+      last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
+      order_quantity = (free_balance * last_price).round(0) - 10
+      safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
+      safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
+      puts "\tENTERED SHORT x0 WITH WHOLE ACCOUNT"
+      puts
+    end
   end
   puts "\t  Script started at:\t#{script_start_timestamp}"
   puts "\t      Last check at:\t#{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
