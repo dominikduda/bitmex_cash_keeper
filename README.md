@@ -2,7 +2,7 @@
 
 # bitmex_cash_keeper
 A bot automatically shorting x0 (cross margin/isolated position) with whole account when all positions are closed.
-The shorted instrument is XBT month future, because it has no funding (to avoid funding)
+The shorted instrument is XBT month future, because it has no funding.
 
 Shorting with cross margin freezes your money because such position is literally 'synthetic USD'. It is possible because technical magic of [Bitmex contracts](https://www.bitmex.com/app/perpetualContractsGuide).
 
