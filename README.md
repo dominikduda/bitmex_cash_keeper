@@ -7,6 +7,9 @@ The shorted instrument is XBT month future, because it has no funding which you 
 Shorting with leverage x1.00 freezes your money because such position is literally like borrowing (you owe) `N` units of XBT then selling it instantly.
 You could say that you are `N` XBT long and `N` XBT short so this is fully hedged position.
 
+### Output screenshot:
+![output](https://raw.githubusercontent.com/dominikduda/bitmex_cash_keeper/master/bitmex_cash_keeper_output.png)
+
 Read more about Bitmex contracts [here](https://www.bitmex.com/app/perpetualContractsGuide).
 
 # Usage
@@ -25,7 +28,3 @@ ruby main.rb --pending-entry-present
 It will make the script wait for entry then start looking for close
 
 Tested on ruby 2.6.1
-
-### Output screenshot:
-![output](https://raw.githubusercontent.com/dominikduda/bitmex_cash_keeper/master/bitmex_cash_keeper_output.png)
-
