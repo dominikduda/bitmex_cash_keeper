@@ -15,8 +15,13 @@ Read more about Bitmex contracts [here](https://www.bitmex.com/app/perpetualCont
 3. Run `ruby main.rb`
 4. You also may want to point to fixed commit (instead of latest master) for [my Bitmex api gem](https://github.com/dominikduda/bitmex_cash_keeper/blob/master/Gemfile#L3).
 
-If you are using pending entry order pass `--pending-entry-present` as follows:
-`ruby main.rb --pending-entry-present`
+### With pending entry
+If you are using pending entry order run with following flag:
+
+```
+ruby main.rb --pending-entry-present
+```
+
 It will make the script wait for entry then start looking for close
 
 Tested on ruby 2.6.1
