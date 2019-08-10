@@ -2,7 +2,7 @@
 
 # bitmex_cash_keeper
 A bot automatically shorting x1.00 with whole account when all positions are closed.
-The shorted instrument is XBT month future, because it has no funding which you would have to pay few times a day on any other instruments.
+The shorted instrument is XBT month future, because it has no funding which you would have to pay few times a day on other instruments.
 
 Shorting with leverage x1.00 freezes your money because such position is literally like borrowing (you owe) `N` units of XBT then selling it instantly.
 You could say that you are `N` XBT long and `N` XBT short so this is fully hedged position.
