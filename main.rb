@@ -57,6 +57,7 @@ def safe_response(&request)
   end
 end
 
+pending_entry_present = ARGV.include?('--pending-entry-present')
 script_start_timestamp = Time.now.strftime('%d-%m-%Y %H:%M:%S')
 detected_closes = 0
 latest_expiring_xbt_future = nil
@@ -88,15 +89,20 @@ loop do
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
   ping_to_bitmex = `ping -c 1 bitmex.com | grep time= | awk '{ print $8 }' | awk -F "=" '{ print $2 }'`
   begin
-    puts "\tLooking for position close..."
-    if (free_balance == total_amount)
+    position_present = free_balance != total_amount
+    puts "\tLooking for #{pending_entry_present ? 'entry' : 'position close'}..."
+    if (!position_present && !pending_entry_present)
       puts "\tPOSITION CLOSE DETECTED"
       detected_closes += 1
       last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
       order_quantity = (free_balance * last_price).round(0) - 10
       safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
-      safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
-      puts "\tENTERED SHORT x0 WITH WHOLE ACCOUNT"
+      safe_response { private_client.position_leverage(latest_expiring_xbt_future[:symbol], 1) }
+      puts "\tENTERED SHORT x1.00 WITH WHOLE ACCOUNT"
+    elsif (position_present && pending_entry_present)
+      puts "\tENTRY DETECTED"
+      puts "\tFROM NOW ON LOOKING FOR POSITION CLOSE"
+      pending_entry_present = false
     else
       puts "\tNot found."
     end
@@ -111,6 +117,7 @@ loop do
   puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
   puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
   puts
+  puts "\t  Waiting for entry:\t#{pending_entry_present}"
   puts "\t       Free balance:\t#{formatted_balance(free_balance)}"
   puts "\tOn exchange balance:\t#{formatted_balance(total_amount)}"
   countdown
