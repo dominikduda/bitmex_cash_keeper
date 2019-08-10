@@ -1,7 +1,7 @@
 <img src="https://raw.githubusercontent.com/dominikduda/config_files/master/dd_logo_blue_bg.png" width="300" height="300" />
 
 # bitmex_cash_keeper
-A bot automatically shorting x0 (cross margin/isolated position) with whole account when all positions are closed.
+A bot automatically x1 with whole account when all positions are closed.
 The shorted instrument is XBT month future, because it has no funding which you would have to pay few times a day on any other instrument.
 
 Shorting with leverage x1.00 freezes your money because such position is literally like borrowing (you owe) `N` units of XBT then selling it instantly.
