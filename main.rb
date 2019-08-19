@@ -98,6 +98,7 @@ loop do
       order_quantity = (free_balance * last_price).round(0) - 10
       safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
       safe_response { private_client.position_leverage(latest_expiring_xbt_future[:symbol], 1) }
+      safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
       puts "\tENTERED SHORT x1.00 WITH WHOLE ACCOUNT"
     elsif (position_present && pending_entry_present)
       puts "\tENTRY DETECTED"
