@@ -60,30 +60,30 @@ end
 pending_entry_present = ARGV.include?('--pending-entry-present')
 script_start_timestamp = Time.now.strftime('%d-%m-%Y %H:%M:%S')
 detected_closes = 0
-latest_expiring_xbt_future = nil
+# latest_expiring_xbt_future = nil
 
 loop do
   system 'clear'
-  loop do 'Fetching latest expiring XBT future'
-    break if latest_expiring_xbt_future
-    puts "\tFinding latest expiring XBT future..."
-    this_and_next_year_suffixes = [Time.now.year, Time.now.year + 1].map do |year|
-      year.to_s.chars.last(2).join
-    end
-    xbt_month_futures = safe_response do
-      public_client.instrument(filter: { rootSymbol: 'XBT', typ: FUTURE_SETTLING_ON_CURRENCY_TYPE })
-    end&.body&.select do |future|
-      this_and_next_year_suffixes.include?(future[:symbol].chars.last(2).join)
-    end
-    if xbt_month_futures&.none?
-      puts "\tFailure, retrying..."
-      next
-    end
-    latest_expiring_xbt_future = xbt_month_futures.sort_by do |future|
-      Time.new(future[:expiry])
-    end.last
-    puts "\tSuccess!"
-  end
+  # loop do 'Fetching latest expiring XBT future'
+  #   break if latest_expiring_xbt_future
+  #   puts "\tFinding latest expiring XBT future..."
+  #   this_and_next_year_suffixes = [Time.now.year, Time.now.year + 1].map do |year|
+  #     year.to_s.chars.last(2).join
+  #   end
+  #   xbt_month_futures = safe_response do
+  #     public_client.instrument(filter: { rootSymbol: 'XBT', typ: FUTURE_SETTLING_ON_CURRENCY_TYPE })
+  #   end&.body&.select do |future|
+  #     this_and_next_year_suffixes.include?(future[:symbol].chars.last(2).join)
+  #   end
+  #   if xbt_month_futures&.none?
+  #     puts "\tFailure, retrying..."
+  #     next
+  #   end
+  #   latest_expiring_xbt_future = xbt_month_futures.sort_by do |future|
+  #     Time.new(future[:expiry])
+  #   end.last
+  #   puts "\tSuccess!"
+  # end
   user_margin_info = safe_response { private_client.user_margin }
   free_balance = to_xbt(user_margin_info.body.fetch(:availableMargin))
   total_amount = to_xbt(user_margin_info.body.fetch(:walletBalance))
@@ -94,11 +94,12 @@ loop do
     if (!position_present && !pending_entry_present)
       puts "\tPOSITION CLOSE DETECTED"
       detected_closes += 1
-      last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
+      # last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
       order_quantity = (free_balance * last_price).round(0) - 10
-      safe_response { private_client.create_order(latest_expiring_xbt_future[:symbol], order_quantity, side: 'Sell', ordType: 'Market') }
-      safe_response { private_client.position_leverage(latest_expiring_xbt_future[:symbol], 1) }
-      safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
+      safe_response { private_client.position_leverage('XBTUSD', 1) }
+      safe_response { private_client.create_order('XBTUSD', order_quantity, side: 'Sell', ordType: 'Market') }
+      safe_response { private_client.position_leverage('XBTUSD', 1) }
+      # safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
       puts "\tENTERED SHORT x1.00 WITH WHOLE ACCOUNT"
     elsif (position_present && pending_entry_present)
       puts "\tENTRY DETECTED"
@@ -115,9 +116,9 @@ loop do
   puts "\t Remaining requests:\t#{user_margin_info.headers['x-ratelimit-remaining']}/#{user_margin_info.headers['x-ratelimit-limit']}"
   puts "\t     Ping to Bitmex:\t#{ping_to_bitmex.chomp} ms"
   puts
-  puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
-  puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
-  puts
+  # puts "\tFound future symbol:\t#{latest_expiring_xbt_future[:symbol]}"
+  # puts "\t Future expiry date:\t#{Time.new(latest_expiring_xbt_future[:expiry]).strftime('%d-%m-%Y')}"
+  # puts
   puts "\t  Waiting for entry:\t#{pending_entry_present}"
   puts "\t       Free balance:\t#{formatted_balance(free_balance)}"
   puts "\tOn exchange balance:\t#{formatted_balance(total_amount)}"
