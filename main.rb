@@ -94,12 +94,13 @@ loop do
     if (!position_present && !pending_entry_present)
       puts "\tPOSITION CLOSE DETECTED"
       detected_closes += 1
-      # last_price = safe_response { public_client.instrument({ symbol: latest_expiring_xbt_future[:symbol] }) }.body.first[:lastPrice]
+      last_price = safe_response { public_client.instrument({ symbol: 'XBTUSD' }) }.body.first[:lastPrice]
       order_quantity = (free_balance * last_price).round(0) - 10
-      safe_response { private_client.position_leverage('XBTUSD', 1) }
+      # safe_response { private_client.position_leverage('XBTUSD', 1) }
+      safe_response { private_client.position_isolate('XBTUSD', false) }
       safe_response { private_client.create_order('XBTUSD', order_quantity, side: 'Sell', ordType: 'Market') }
-      safe_response { private_client.position_leverage('XBTUSD', 1) }
-      # safe_response { private_client.position_isolate(latest_expiring_xbt_future[:symbol], false) }
+      safe_response { private_client.position_isolate('XBTUSD', false) }
+      # safe_response { private_client.position_leverage('XBTUSD', 1) }
       puts "\tENTERED SHORT x1.00 WITH WHOLE ACCOUNT"
     elsif (position_present && pending_entry_present)
       puts "\tENTRY DETECTED"
